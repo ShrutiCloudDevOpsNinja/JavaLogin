@@ -47,7 +47,7 @@ stages:
           displayName: 'Copy WAR to Remote Tomcat'
           inputs:
             sshEndpoint: 'linux'
-            sourceFolder: '$(Pipeline.Workspace)/$(artifactName)/target'
-            contents: '$(warFileName)'
+            sourceFolder: '$(Pipeline.Workspace)/javalogin/drop'
+            contents: '*.war'
             targetFolder: '$(deployFolder)'
             readyTimeout: '20000'
