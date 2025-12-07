@@ -1,0 +1,52 @@
+trigger:
+- main
+
+pool: linux-pool
+
+variables:
+  appName: 'JavaLoginShowcase'
+  warFileName: 'JavaLoginShowcase-1.0.0.war'
+  artifactName: 'javalogin'
+  jdkVersion: '1.8'         # 1.8 / 11 / 17 jo chahiye
+  tomcatHome: '/opt/tomcat' # apne server ka TOMCAT_HOME yaha daalo
+  deployFolder: '/opt/tomcat/webapps'  # temp folder jaha WAR copy hoga
+ 
+stages:
+  - stage: 
+    displayName: build wali stage
+    jobs:
+      - job: 
+        displayName: build wali job
+        steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              cd $(System.DefaultWorkingDirectory)
+              mvn clean package
+              # sudo cp -r $(System.DefaultWorkingDirectory)/target/* /opt/tomcat/webapps
+              # sudo systemctl restart tomcat
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: '$(Pipeline.Workspace)'
+            artifact: 'javalogin'
+            publishLocation: 'pipeline'
+ 
+  - stage: deployStage
+    displayName: Deploy karna hai
+    jobs:
+      - job: 
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            buildType: 'current'
+            artifactName: 'javalogin'
+            itemPattern: 
+            targetPath: '$(Pipeline.Workspace)/$(artifactName)'
+        - task: CopyFilesOverSSH@0
+          inputs:
+            sshEndpoint: 'linux'
+            sourceFolder: '$(Pipeline.Workspace)/$(artifactName)'
+            contents: '$(warFileName)'
+            targetFolder: '%(deployFolder)'
+            readyTimeout: '20000'
