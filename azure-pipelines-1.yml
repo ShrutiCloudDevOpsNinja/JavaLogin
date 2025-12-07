@@ -94,7 +94,7 @@ stages:
       displayName: "Verify Artifact"
 
     - task: CopyFilesOverSSH@0
-      displayName: "Copy WAR to /tmp/deploy"
+      displayName: "Copy WAR to /azure/deploy"
       inputs:
         sshEndpoint: "linux"
         sourceFolder: "$(Pipeline.Workspace)/$(artifactName)"
@@ -109,8 +109,6 @@ stages:
         sshEndpoint: "linux"
         runOptions: "commands"
         commands: |
-          echo "Creating deploy directory if not exists..."
-          #sudo mkdir -p /tmp/deploy
 
           echo "Moving WAR to Tomcat webapps folder..."
           sudo mv /home/azureuser/deploy/*.war /opt/tomcat/webapps/
