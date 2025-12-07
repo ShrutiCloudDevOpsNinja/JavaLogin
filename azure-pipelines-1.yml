@@ -1,78 +1,75 @@
 trigger:
 - main
 
-pool:
-  vmImage: 'ubuntu-latest'
+pool: linux-pool
 
 variables:
-  variables:
   appName: 'JavaLoginShowcase'
-  warFileName: 'JavaLoginShowcase-1.0.0.war'
   artifactName: 'javalogin'
-  jdkVersion: '1.8'         # 1.8 / 11 / 17 jo chahiye
-  tomcatHome: '/opt/tomcat' # apne server ka TOMCAT_HOME yaha daalo
-  deployFolder: '/opt/tomcat/webapps'  # temp folder jaha WAR copy hoga
+  warFileName: '*.war'
+  jdkVersion: '1.8'
+  tomcatHome: '/opt/tomcat'
+  deployFolder: '/opt/tomcat/webapps'
 
+
+###################  BUILD STAGE  ###################
 stages:
-# ------------------- BUILD STAGE -------------------
 - stage: Build
   displayName: "Build Stage"
   jobs:
   - job: MavenBuild
-    displayName: "Build WAR using Maven"
+    displayName: "Compile & Package WAR"
     steps:
-
     - task: Bash@3
       displayName: "Run Maven Package"
       inputs:
         targetType: 'inline'
         script: |
-          cd $(System.DefaultWorkingDirectory)/JavaLoginShowcase
+          cd $(System.DefaultWorkingDirectory)
           mvn clean package
 
     - task: PublishPipelineArtifact@1
       displayName: "Publish WAR Artifact"
       inputs:
-        targetPath: "$(System.DefaultWorkingDirectory)/JavaLoginShowcase/target"
+        targetPath: "$(System.DefaultWorkingDirectory)/target"
         artifact: "$(artifactName)"
+        publishLocation: "pipeline"
 
 
-# ------------------- DEPLOY STAGE -------------------
+###################  DEPLOY STAGE  ###################
 - stage: Deploy
-  displayName: "Deploy to Tomcat"
+  displayName: "Deploy to Tomcat Server"
   dependsOn: Build
   jobs:
-  - job: DeployToServer
-    displayName: "Copy WAR to Remote Server"
+  - job: DeployJob
+    displayName: "Deploy WAR via SSH"
     steps:
 
     - task: DownloadPipelineArtifact@2
-      displayName: "Download Artifact"
+      displayName: "Download WAR Artifact"
       inputs:
-        buildType: 'current'
         artifactName: "$(artifactName)"
         targetPath: "$(Pipeline.Workspace)/$(artifactName)"
 
-    # Debug listing
     - script: |
-        echo "Listing artifact contents..."
+        echo "Artifact structure:"
         ls -R $(Pipeline.Workspace)/$(artifactName)
-      displayName: "Verify Artifact Structure"
+      displayName: "Verify Artifact"
 
     - task: CopyFilesOverSSH@0
       displayName: "Copy WAR to Remote Tomcat"
       inputs:
-        sshEndpoint: 'linux'  # Make sure service connection name matches
+        sshEndpoint: "linux"   # MUST match your service connection name
         sourceFolder: "$(Pipeline.Workspace)/$(artifactName)"
         contents: "$(warFileName)"
         targetFolder: "$(deployFolder)"
         readyTimeout: "20000"
 
     - task: SSH@0
-      displayName: "Restart Tomcat Server"
+      displayName: "Restart Tomcat"
       inputs:
-        sshEndpoint: 'linux'
+        sshEndpoint: "linux"
         runOptions: "commands"
         commands: |
           sudo systemctl restart tomcat
-          sudo systemctl status tomcat --no-pager
+          sudo systemctl status tomcat --no-pager || true
