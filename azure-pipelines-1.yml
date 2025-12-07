@@ -14,19 +14,39 @@ variables:
 
 ###################  BUILD STAGE  ###################
 stages:
+# - stage: Build
+#   displayName: "Build Stage"
+#   jobs:
+#   - job: MavenBuild
+#     displayName: "Compile & Package WAR"
+#     steps:
+#     - task: Bash@3
+#       displayName: "Run Maven Package"
+#       inputs:
+#         targetType: 'inline'
+#         script: |
+#           cd $(System.DefaultWorkingDirectory)
+#           mvn clean package
+
+#     - task: PublishPipelineArtifact@1
+#       displayName: "Publish WAR Artifact"
+#       inputs:
+#         targetPath: "$(System.DefaultWorkingDirectory)/target"
+#         artifact: "$(artifactName)"
+#         publishLocation: "pipeline"
 - stage: Build
   displayName: "Build Stage"
   jobs:
   - job: MavenBuild
-    displayName: "Compile & Package WAR"
+    displayName: "Compile & Package WAR + Checkstyle"
     steps:
     - task: Bash@3
-      displayName: "Run Maven Package"
+      displayName: "Run Maven Validate + Package"
       inputs:
         targetType: 'inline'
         script: |
           cd $(System.DefaultWorkingDirectory)
-          mvn clean package
+          mvn clean validate package
 
     - task: PublishPipelineArtifact@1
       displayName: "Publish WAR Artifact"
