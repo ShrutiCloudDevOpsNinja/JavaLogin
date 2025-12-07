@@ -99,7 +99,8 @@ stages:
         sshEndpoint: "linux"
         sourceFolder: "$(Pipeline.Workspace)/$(artifactName)"
         contents: "$(warFileName)"
-        targetFolder: "/tmp/deploy"
+        # targetFolder: "/tmp/deploy"
+        targetFolder: "/home/azureuser/deploy"
         readyTimeout: "20000"
 
     - task: SSH@0
@@ -109,10 +110,10 @@ stages:
         runOptions: "commands"
         commands: |
           echo "Creating deploy directory if not exists..."
-          sudo mkdir -p /tmp/deploy
+          #sudo mkdir -p /tmp/deploy
 
           echo "Moving WAR to Tomcat webapps folder..."
-          sudo mv /tmp/deploy/*.war /opt/tomcat/webapps/
+          sudo mv /home/azureuser/deploy/*.war /opt/tomcat/webapps/
 
           echo "Restarting Tomcat..."
           sudo systemctl restart tomcat
