@@ -44,9 +44,10 @@ stages:
             itemPattern: 
             targetPath: '$(Pipeline.Workspace)/$(artifactName)'
         - task: CopyFilesOverSSH@0
+          displayName: 'Copy WAR to Remote Tomcat'
           inputs:
             sshEndpoint: 'linux'
-            sourceFolder: '$(Pipeline.Workspace)/$(artifactName)'
+            sourceFolder: '$(Pipeline.Workspace)/$(artifactName)/target'
             contents: '$(warFileName)'
-            targetFolder: '%(deployFolder)'
+            targetFolder: '$(deployFolder)'
             readyTimeout: '20000'
