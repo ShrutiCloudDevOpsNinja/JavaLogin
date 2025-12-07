@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="severity" value="error"/>
+
+    <!-- Ensure every file has correct encoding -->
+    <property name="charset" value="UTF-8"/>
+
+    <module name="TreeWalker">
+        <module name="AnnotationUseStyle"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="AvoidInlineConditionals"/>
+        <module name="AvoidStarImport"/>
+        <module name="BooleanExpressionComplexity"/>
+        <module name="ClassDataAbstractionCoupling"/>
+        <module name="ClassFanOutComplexity"/>
+        <module name="ConstantName"/>
+        <module name="EmptyBlock"/>
+        <module name="EqualsHashCode"/>
+        <module name="FileContentsHolder"/>
+        <module name="FinalClass"/>
+        <module name="FinalLocalVariable"/>
+        <module name="HiddenField"/>
+        <module name="IllegalCatch"/>
+        <module name="IllegalThrows"/>
+        <module name="IllegalToken"/>
+        <module name="IllegalTokenText"/>
+        <module name="ImportOrder"/>
+        <module name="InnerTypeLast"/>
+        <module name="JavaNCSS"/>
+        <module name="JavadocMethod"/>
+        <module name="JavadocParagraph"/>
+        <module name="JavadocStyle"/>
+        <module name="JavadocVariable"/>
+        <module name="LineLength">
+            <property name="max" value="120"/>
+        </module>
+        <module name="LocalFinalVariableName"/>
+        <module name="LocalVariableName"/>
+        <module name="MagicNumber"/>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="MethodParamPad"/>
+        <module name="MissingDeprecated"/>
+        <module name="MissingOverride"/>
+        <module name="ModifierOrder"/>
+        <module name="NeedBraces"/>
+        <module name="NestedIfDepth"/>
+        <module name="NestedTryDepth"/>
+        <module name="NoFinalizer"/>
+        <module name="NoLineWrap"/>
+        <module name="NoWhitespaceAfter"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="OneStatementPerLine"/>
+        <module name="OneTopLevelClass"/>
+        <module name="OperatorWrap"/>
+        <module name="OuterTypeFilename"/>
+        <module name="OuterTypeNumber"/>
+        <module name="ParameterAssignment"/>
+        <module name="ParameterName"/>
+        <module name="ParenPad"/>
+        <module name="RedundantModifier"/>
+        <module name="RegexpSinglelineJava"/>
+        <module name="ReturnCount"/>
+        <module name="RightCurly"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="StaticVariableName"/>
+        <module name="StringLiteralEquality"/>
+        <module name="SuperClone"/>
+        <module name="SuperFinalize"/>
+        <module name="ThrowsCount"/>
+        <module name="TodoComment"/>
+        <module name="TrailingComment"/>
+        <module name="TypeName"/>
+        <module name="UnnecessaryParentheses"/>
+        <module name="VariableDeclarationUsageDistance"/>
+        <module name="VisibilityModifier"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround"/>
+    </module>
+
+    <!-- Indentation Rule -->
+    <module name="Indentation">
+        <property name="basicOffset" value="2"/>
+        <property name="braceAdjustment" value="0"/>
+        <property name="caseIndent" value="2"/>
+        <property name="throwsIndent" value="4"/>
+        <property name="lineWrappingIndentation" value="2"/>
+    </module>
+
+</module>
