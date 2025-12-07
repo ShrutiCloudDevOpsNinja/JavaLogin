@@ -36,7 +36,44 @@ stages:
         publishLocation: "pipeline"
 
 
-###################  DEPLOY STAGE  ###################
+# ###################  DEPLOY STAGE  ###################
+# - stage: Deploy
+#   displayName: "Deploy to Tomcat Server"
+#   dependsOn: Build
+#   jobs:
+#   - job: DeployJob
+#     displayName: "Deploy WAR via SSH"
+#     steps:
+
+#     - task: DownloadPipelineArtifact@2
+#       displayName: "Download WAR Artifact"
+#       inputs:
+#         artifactName: "$(artifactName)"
+#         targetPath: "$(Pipeline.Workspace)/$(artifactName)"
+
+#     - script: |
+#         echo "Artifact structure:"
+#         ls -R $(Pipeline.Workspace)/$(artifactName)
+#       displayName: "Verify Artifact"
+
+#     - task: CopyFilesOverSSH@0
+#       displayName: "Copy WAR to Remote Tomcat"
+#       inputs:
+#         sshEndpoint: "linux"   # MUST match your service connection name
+#         sourceFolder: "$(Pipeline.Workspace)/$(artifactName)"
+#         contents: "$(warFileName)"
+#         targetFolder: "$(deployFolder)"
+#         readyTimeout: "20000"
+
+#     - task: SSH@0
+#       displayName: "Restart Tomcat"
+#       inputs:
+#         sshEndpoint: "linux"
+#         runOptions: "commands"
+#         commands: |
+#           sudo systemctl restart tomcat
+#           sudo systemctl status tomcat --no-pager || true
+
 - stage: Deploy
   displayName: "Deploy to Tomcat Server"
   dependsOn: Build
@@ -52,24 +89,27 @@ stages:
         targetPath: "$(Pipeline.Workspace)/$(artifactName)"
 
     - script: |
-        echo "Artifact structure:"
+        echo "Artifact Content:"
         ls -R $(Pipeline.Workspace)/$(artifactName)
       displayName: "Verify Artifact"
 
     - task: CopyFilesOverSSH@0
-      displayName: "Copy WAR to Remote Tomcat"
+      displayName: "Copy WAR to temp folder"
       inputs:
-        sshEndpoint: "linux"   # MUST match your service connection name
+        sshEndpoint: "linux"
         sourceFolder: "$(Pipeline.Workspace)/$(artifactName)"
         contents: "$(warFileName)"
-        targetFolder: "$(deployFolder)"
+        targetFolder: "/home/azureuser/deploy"
         readyTimeout: "20000"
 
     - task: SSH@0
-      displayName: "Restart Tomcat"
+      displayName: "Move WAR & Restart Tomcat"
       inputs:
         sshEndpoint: "linux"
         runOptions: "commands"
         commands: |
+          sudo mv /home/azureuser/deploy/*.war /opt/tomcat/webapps/
+          sudo chown tomcat:tomcat /opt/tomcat/webapps/*.war || true
           sudo systemctl restart tomcat
           sudo systemctl status tomcat --no-pager || true
+
